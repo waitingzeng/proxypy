@@ -344,7 +344,7 @@ class HTTPResponse(HTTPMessage):
             # FIXME: Make a single-chunk body
             s += "%x" % len(self.body) + HTTPMessage.EOL
             s += self.body + HTTPMessage.EOL
-            s += HTTPMessage.EOL
+            #s += HTTPMessage.EOL
             s += "0" + HTTPMessage.EOL + HTTPMessage.EOL
 
         return s
