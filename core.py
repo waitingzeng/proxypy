@@ -116,6 +116,10 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         # Delegate request to plugin
         req = ProxyPlugin.delegate(ProxyPlugin.EVENT_MANGLE_REQUEST, req.clone())
 
+        if isinstance(req, HTTPResponse):
+            self.sendResponse(req)
+            return
+
         # if you need a persistent connection set the flag in order to save the status
         if req.isKeepAlive():
             self.keepalive = True
