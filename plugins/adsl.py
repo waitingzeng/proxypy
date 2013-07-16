@@ -5,7 +5,7 @@ import os
 import time
 
 if platform.system() == 'Windows':
-    class Adsl(object):
+    class ADSL(object):
         #==============================================================================
         # __init__ : name: adsl名称
         #=========================================================================
