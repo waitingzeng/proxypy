@@ -52,7 +52,7 @@ else:
             pass
 
 def proxy_mangle_request(req):
-    path = req.getPath()
+    path = req.getHost()
     if path in ['proxy.disconnect', 'proxy.connect', 'proxy.reconnect']:
         params = req.getParams()
         adsl = ADSL(**params)
