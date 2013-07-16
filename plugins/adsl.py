@@ -52,17 +52,20 @@ else:
             pass
 
 def proxy_mangle_request(req):
-    path = req.getHost()
-    if path in ['proxy.disconnect', 'proxy.connect', 'proxy.reconnect']:
+    from http import HTTPResponse
+    from core import proxystate
+    host, port = req.getHost()
+    if host in ['proxy.disconnect', 'proxy.connect', 'proxy.reconnect']:
         params = req.getParams()
+        proxystate.log.info("adsl action: %s, params: %s]" % (host, params))
         adsl = ADSL(**params)
-        if path == 'proxy.disconnect':
+        if host == 'proxy.disconnect':
             adsl.disconnect()
-        elif path == 'proxy.connect':
+        elif host == 'proxy.connect':
             adsl.connect()
-        elif path == 'proxy.reconnect':
+        elif host == 'proxy.reconnect':
             adsl.reconnect()
-        from http import HTTPResponse
-        res = HTTPResponse('HTTP/1.1', 200, 'OK')
+
+        res = HTTPResponse('HTTP/1.1', 200, 'OK', body="OK")
         return res
     return req
