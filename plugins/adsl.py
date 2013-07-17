@@ -4,6 +4,7 @@ import platform
 import os
 import time
 import urllib2
+import sys
 
 if platform.system() == 'Windows':
     class ADSL(object):
@@ -79,10 +80,12 @@ def proxy_mangle_request(req):
         return res
     return req
 
+
+
 def main():
     while True:
         try:
-            print urllib2.urlopen('http://sphone.speedy-custom.com/update_ip/%s' % params['name']).read()
+            print urllib2.urlopen('http://sphone.speedy-custom.com/update_ip/%s' % sys.argv[1]).read()
         except:
             print 'error'
         time.sleep(1)
