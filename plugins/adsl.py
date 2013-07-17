@@ -3,6 +3,7 @@
 import platform
 import os
 import time
+import urllib2
 
 if platform.system() == 'Windows':
     class ADSL(object):
@@ -19,15 +20,19 @@ if platform.system() == 'Windows':
         # connect : 宽带拨号
         #=========================================================================
         def connect(self):
+            from core import proxystate
             cmd_str = "rasdial %s %s %s" % (
                 self.name, self.username, self.password)
+            proxystate.log.info(cmd_str)
             os.system(cmd_str)
 
         #==============================================================================
         # disconnect : 断开宽带连接
         #=========================================================================
         def disconnect(self):
-            cmd_str = "rasdial %s /disconnect" % self.name
+            cmd_str = "rasdial %s /DISCONNECT" % self.name
+            from core import proxystate
+            proxystate.log.info(cmd_str)
             os.system(cmd_str)
 
         #==============================================================================
@@ -51,6 +56,7 @@ else:
         def reconnect(self):
             pass
 
+
 def proxy_mangle_request(req):
     from http import HTTPResponse
     from core import proxystate
@@ -65,7 +71,22 @@ def proxy_mangle_request(req):
             adsl.connect()
         elif host == 'proxy.reconnect':
             adsl.reconnect()
-
-        res = HTTPResponse('HTTP/1.1', 200, 'OK', body="OK")
+        try:
+            ip = urllib2.urlopen('http://sphone.speedy-custom.com/update_ip/%s' % params['name']).read()
+        except:
+            ip = ''
+        res = HTTPResponse('HTTP/1.1', 200, 'OK', body="OK %s" % ip)
         return res
     return req
+
+def main():
+    while True:
+        try:
+            print urllib2.urlopen('http://sphone.speedy-custom.com/update_ip/%s' % params['name']).read()
+        except:
+            print 'error'
+        time.sleep(1)
+
+
+if __name__ == '__main__':
+    main()
