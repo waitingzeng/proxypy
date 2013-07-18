@@ -51,7 +51,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         self._host = None
         self._port = 0
         global proxystate
-        proxystate.server_address = request.getsockname()
+        proxystate.server_address = request.getsockname()[0]
         
         SocketServer.StreamRequestHandler.__init__(self, request, client_address, server)
     
