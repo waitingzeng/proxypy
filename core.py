@@ -51,7 +51,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         self._host = None
         self._port = 0
         global proxystate
-        proxystate.server_address = request.getsockname()[0]
+        proxystate.thread_local.server_address = request.getsockname()
         
         SocketServer.StreamRequestHandler.__init__(self, request, client_address, server)
     
@@ -274,7 +274,7 @@ class ProxyState:
         self.log        = Logger()
         self.history    = HttpHistory()
         self.redirect   = None
-        self.server_address   = threading.local()
+        self.thread_local   = threading.local()
 
     @staticmethod
     def getTargetHost(req):
