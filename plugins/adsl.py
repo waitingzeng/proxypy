@@ -10,7 +10,7 @@ if platform.system() == 'Windows':
     class ADSL(object):
         #==============================================================================
         # __init__ : name: adsl名称
-        #=========================================================================
+        #======================================================================
 
         def __init__(self, name, username, password, **kwargs):
             self.name = name
@@ -19,7 +19,7 @@ if platform.system() == 'Windows':
 
         #==============================================================================
         # connect : 宽带拨号
-        #=========================================================================
+        #======================================================================
         def connect(self):
             from core import proxystate
             cmd_str = "rasdial %s %s %s" % (
@@ -29,7 +29,7 @@ if platform.system() == 'Windows':
 
         #==============================================================================
         # disconnect : 断开宽带连接
-        #=========================================================================
+        #======================================================================
         def disconnect(self):
             cmd_str = "rasdial %s /DISCONNECT" % self.name
             from core import proxystate
@@ -38,13 +38,14 @@ if platform.system() == 'Windows':
 
         #==============================================================================
         # reconnect : 重新进行拨号
-        #=========================================================================
+        #======================================================================
         def reconnect(self):
             self.disconnect()
             time.sleep(1)
             self.connect()
 else:
     class ADSL(object):
+
         def __init__(self, *args, **kwargs):
             pass
 
@@ -56,6 +57,21 @@ else:
 
         def reconnect(self):
             pass
+
+
+from random import randrange
+
+
+def gen_ip():
+    not_valid = [10, 127, 169, 172, 192]
+
+    first = randrange(1, 256)
+    while first in not_valid:
+        first = randrange(1, 256)
+
+    ip = ".".join([str(first), str(randrange(1, 256)),
+                   str(randrange(1, 256)), str(randrange(1, 256))])
+    return ip
 
 
 def proxy_mangle_request(req):
@@ -73,13 +89,15 @@ def proxy_mangle_request(req):
         elif host == 'proxy.reconnect':
             adsl.reconnect()
         try:
-            ip = urllib2.urlopen('http://sphone.speedy-custom.com/update_ip/%s' % params['name']).read()
+            ip = urllib2.urlopen(
+                'http://sphone.speedy-custom.com/update_ip/%s' % params['name']).read()
         except:
             ip = ''
         res = HTTPResponse('HTTP/1.1', 200, 'OK', body="OK %s" % ip)
         return res
-    return req
 
+    req.setHeader("X-Forwarded-For", gen_ip())
+    return req
 
 
 def main():
