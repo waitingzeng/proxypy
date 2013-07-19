@@ -152,7 +152,7 @@ class HTTPMessage():
         return url
 
     def __findHeader(self, name, ignorecase=True):
-        r = None
+        r = name
         for n in self.headers:
             if (ignorecase and name.lower() == n.lower()) or ((not ignorecase) and name == n):
                 r = n
