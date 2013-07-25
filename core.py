@@ -19,7 +19,9 @@
   this program. If not, see <http://www.gnu.org/licenses/>.
   
 """
-
+import gevent
+from gevent import monkey
+monkey.patch_all()
 import SocketServer
 import BaseHTTPServer
 import socket

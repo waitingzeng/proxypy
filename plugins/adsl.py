@@ -96,7 +96,7 @@ def proxy_mangle_request(req):
         res = HTTPResponse('HTTP/1.1', 200, 'OK', body="OK %s" % ip)
         return res
 
-    req.setHeader("X-Forwarded-For", gen_ip())
+    #req.setHeader("X-Forwarded-For", gen_ip())
     return req
 
 
