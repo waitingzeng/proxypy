@@ -131,7 +131,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         
         # Target server host and port
         host, port = ProxyState.getTargetHost(req)
-        proxystate.log.info('%s', req)
+        proxystate.log.info('%s' % req)
         if req.getMethod() == HTTPRequest.METHOD_GET:
             res = self.doGET(host, port, req)
             self.sendResponse(res)
