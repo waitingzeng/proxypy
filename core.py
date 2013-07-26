@@ -19,7 +19,6 @@
   this program. If not, see <http://www.gnu.org/licenses/>.
   
 """
-import gevent
 from gevent import monkey
 monkey.patch_all()
 import SocketServer
@@ -132,7 +131,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         
         # Target server host and port
         host, port = ProxyState.getTargetHost(req)
-        
+        proxystate.log.info('%s', req)
         if req.getMethod() == HTTPRequest.METHOD_GET:
             res = self.doGET(host, port, req)
             self.sendResponse(res)
@@ -159,6 +158,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
 
     def doRequest(self, conn, method, path, params, headers):
         global proxystate
+
         try:
             self._request(conn, method, path, params, headers)
             return True
@@ -203,7 +203,7 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
                 socket_ssl.do_handshake()
                 break
             except (ssl.SSLError, IOError):
-                # proxystate.log.error(e.__str__())
+                proxystate.log.error(e.__str__())
                 return
 
         # Switch to new socket
