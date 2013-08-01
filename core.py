@@ -31,11 +31,12 @@ import os
 import urllib
 import ssl
 import copy
+import base64
 
 from history import *
 from http import *
 from https import *
-from logger import Logger
+from log import open_debug
 
 DEFAULT_CERT_FILE = "./cert/ncerts/proxpy.pem"
 
@@ -110,10 +111,20 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         try:
             req = HTTPRequest.build(self.rfile)
         except Exception as e:
-            proxystate.log.debug(e.__str__() + ": Error on reading request message")
+            proxystate.log.debug(e.__str__() + ": Error on reading request message", exc_info=True)
             return
             
         if req is None:
+            return
+
+        if 'Proxy-Authorization' in req.headers:
+            v = req.headers['Proxy-Authorization']
+            proxy_auth = base64.b64decode(v[0])
+            if proxy_auth != proxystate.auth:
+                return
+            del req.headers['Proxy-Authorization']
+
+        if proxystate.auth and proxystate.auth != req.proxy_auth:
             return
 
         # Delegate request to plugin
@@ -273,9 +284,10 @@ class ProxyState:
         self.dumpfile   = None
 
         # Internal state
-        self.log        = Logger()
+        self.log        = open_debug('proxy')
         self.history    = HttpHistory()
         self.redirect   = None
+        self.auth       = None
         self.thread_local   = threading.local()
 
     @staticmethod

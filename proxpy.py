@@ -37,11 +37,13 @@ Syntax: python %s <options>
  -r <host:[port]>  redirect HTTP traffic to target host (default port: 80)
  -v                be more verbose
  -x <filename>     load a ProxPy plugin
+ -q username:password     auth username and password
+
 """ % sys.argv[0]
 
 def parse_options():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:d:hp:r:vx:")
+        opts, args = getopt.getopt(sys.argv[1:], "a:d:hp:r:vx:q:")
     except getopt.GetoptError, e:
         print str(e)
         show_help()
@@ -66,6 +68,9 @@ def parse_options():
         
     if 'a' in opts:
         ps.listenaddr = opts['a']
+
+    if 'p' in opts:
+        ps.auth = opts['p']
 
     # Check and parse redirection host
     if 'r' in opts:

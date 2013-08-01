@@ -24,6 +24,8 @@ import datetime
 import copy
 import urlparse
 import select
+import base64
+
 
 
 class HTTPUtil():
@@ -45,6 +47,7 @@ class HTTPMessage():
         self.time = datetime.datetime.now()
         # Set unique message ID
         self.uid = HTTPMessage.uid
+        self.proxy_auth = None
 
         if headers is None:
             self.headers = {}
@@ -319,8 +322,8 @@ class HTTPResponse(HTTPMessage):
         method, url, proto = reqline.split()
 
         # Read headers & body
-        headers = HTTPMessage._readheaders(data)
-        body = HTTPMessage._readbody(data, headers)
+        headers = self._readheaders(data)
+        body = self._readbody(data, headers)
 
         return HTTPRequest(method, url, proto, headers, body)
 
