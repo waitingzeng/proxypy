@@ -117,15 +117,18 @@ class ProxyHandler(SocketServer.StreamRequestHandler):
         if req is None:
             return
 
-        if 'Proxy-Authorization' in req.headers:
-            v = req.headers['Proxy-Authorization']
-            proxy_auth = base64.b64decode(v[0])
-            if proxy_auth != proxystate.auth:
+        if proxystate.auth:
+            if 'Proxy-Authorization' in req.headers:
+                v = req.headers['Proxy-Authorization']
+                proxy_auth = base64.b64decode(v[0][6:])
+                print proxystate.auth, proxy_auth
+                if proxy_auth != proxystate.auth:
+                    proxystate.log.error('%s not match auth', proxy_auth)
+                    return
+                del req.headers['Proxy-Authorization']
+            else:
+                proxystate.log.error('request proxy auth')
                 return
-            del req.headers['Proxy-Authorization']
-
-        if proxystate.auth and proxystate.auth != req.proxy_auth:
-            return
 
         # Delegate request to plugin
         req = ProxyPlugin.delegate(ProxyPlugin.EVENT_MANGLE_REQUEST, req.clone())
